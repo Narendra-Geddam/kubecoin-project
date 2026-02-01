@@ -1,1 +1,2 @@
-prod
+who
+hostname
