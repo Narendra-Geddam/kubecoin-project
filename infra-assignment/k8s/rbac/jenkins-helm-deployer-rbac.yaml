@@ -1,42 +1,19 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: jenkins-helm-deployer
+  name: jenkins-helm-cluster-role
 rules:
   - apiGroups: [""]
-    resources:
-      - configmaps
-      - endpoints
-      - events
-      - persistentvolumeclaims
-      - pods
-      - secrets
-      - serviceaccounts
-      - services
+    resources: ["namespaces", "secrets", "configmaps", "services", "pods", "serviceaccounts", "persistentvolumeclaims", "endpoints", "events"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: ["apps"]
-    resources:
-      - deployments
-      - replicasets
-      - statefulsets
-      - daemonsets
+    resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-  - apiGroups: ["batch"]
-    resources:
-      - jobs
-      - cronjobs
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-  - apiGroups: ["networking.k8s.io"]
-    resources:
-      - ingresses
-      - networkpolicies
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: jenkins-helm-deployer
+  name: jenkins-helm-cluster-rolebinding
 subjects:
   - kind: ServiceAccount
     name: jenkins
@@ -44,4 +21,4 @@ subjects:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: jenkins-helm-deployer
+  name: jenkins-helm-cluster-role
