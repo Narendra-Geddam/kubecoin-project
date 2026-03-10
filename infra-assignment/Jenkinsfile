@@ -26,7 +26,6 @@ spec:
     string(name: 'IMAGE_TAG_PARAM', defaultValue: '', description: 'Image tag override. If empty, BUILD_NUMBER is used.')
     string(name: 'BACKEND_IMAGE_REPOSITORY_PARAM', defaultValue: 'docker.io/privatergistry/kubecoin-backend', description: 'Backend Docker image repo')
     string(name: 'FRONTEND_IMAGE_REPOSITORY_PARAM', defaultValue: 'docker.io/privatergistry/kubecoin-frontend', description: 'Frontend Docker image repo')
-    booleanParam(name: 'KAFKA_ENABLED_PARAM', defaultValue: false, description: 'Deploy Kafka infra service')
   }
 
   environment {
@@ -96,8 +95,6 @@ EOF
           sh '''
             IMAGE_TAG="${IMAGE_TAG_PARAM:-$BUILD_NUMBER}"
             [ -z "$IMAGE_TAG" ] && IMAGE_TAG=latest
-            KAFKA_ENABLED="${KAFKA_ENABLED_PARAM:-true}"
-            [ "$KAFKA_ENABLED" != "true" ] && [ "$KAFKA_ENABLED" != "false" ] && KAFKA_ENABLED=true
 
             helm upgrade --install kubecoin infra-assignment/helm/kubecoin \
               --namespace infra \
@@ -107,7 +104,6 @@ EOF
               --set backend.image.tag="${IMAGE_TAG}" \
               --set frontend.image.repository="${FRONTEND_IMAGE_REPOSITORY_PARAM}" \
               --set frontend.image.tag="${IMAGE_TAG}" \
-              --set kafka.enabled="${KAFKA_ENABLED}" \
               --wait \
               --timeout 10m
           '''

@@ -16,17 +16,6 @@ postgres:
       cpu: "500m"
       memory: "512Mi"
 
-kafka:
-  enabled: false
-  image: obsidiandynamics/kafka:latest
-  volume:
-    name: kafka-storage
-    size: 2Gi
-  resources:
-    limits:
-      cpu: "1"
-      memory: "1Gi"
-
 backend:
   image:
     repository: docker.io/privatergistry/kubecoin-backend
