@@ -21,6 +21,12 @@ kubectl apply -f infra-assignment/k8s/infra/
 kubectl apply -f infra-assignment/k8s/app/
 ```
 
+## Jenkins RBAC (One-Time)
+
+```bash
+kubectl apply -f infra-assignment/k8s/rbac/jenkins-helm-deployer-rbac.yaml
+```
+
 ## Notes
 
 - Update image repository values in `k8s/app/*deployment.yaml` to your Docker Hub repo.
