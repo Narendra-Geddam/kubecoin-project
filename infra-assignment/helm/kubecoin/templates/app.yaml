@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: {{ .Values.namespaces.app }}
+data:
+  DB_HOST: {{ .Values.backend.env.DB_HOST | quote }}
+  DB_NAME: {{ .Values.backend.env.DB_NAME | quote }}
+  KAFKA_BOOTSTRAP_SERVERS: {{ .Values.backend.env.KAFKA_BOOTSTRAP_SERVERS | quote }}
+  BACKEND_URL: {{ .Values.frontend.env.BACKEND_URL | quote }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+  namespace: {{ .Values.namespaces.app }}
+type: Opaque
+stringData:
+  DB_USER: {{ .Values.backend.env.DB_USER | quote }}
+  DB_PASSWORD: {{ .Values.backend.env.DB_PASSWORD | quote }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: {{ .Values.namespaces.app }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:15-alpine
+          command: ['sh', '-c', 'until pg_isready -h $DB_HOST -U $DB_USER -d $DB_NAME; do echo waiting for database; sleep 2; done;']
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secrets
+      containers:
+        - name: backend
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secrets
+          resources:
+            limits:
+              cpu: {{ .Values.backend.resources.limits.cpu | quote }}
+              memory: {{ .Values.backend.resources.limits.memory | quote }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: {{ .Values.namespaces.app }}
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - port: 5000
+      targetPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: {{ .Values.namespaces.app }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BACKEND_URL
+              value: {{ .Values.frontend.env.BACKEND_URL | quote }}
+          resources:
+            limits:
+              cpu: {{ .Values.frontend.resources.limits.cpu | quote }}
+              memory: {{ .Values.frontend.resources.limits.memory | quote }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: {{ .Values.namespaces.app }}
+spec:
+  type: NodePort
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 30000

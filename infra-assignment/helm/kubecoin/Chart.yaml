@@ -1,0 +1,4 @@
+apiVersion: v2
+name: kubecoin
+version: 0.1.0
+description: KubeCoin infra + app deployment

@@ -13,8 +13,8 @@ spec:
       command:
         - /busybox/cat
       tty: true
-    - name: kubectl
-      image: bitnami/kubectl:latest
+    - name: helm
+      image: alpine/helm:3.14.4
       command:
         - cat
       tty: true
@@ -91,17 +91,20 @@ EOF
 
     stage('Deploy to Kubernetes') {
       steps {
-        container('kubectl') {
+        container('helm') {
           sh '''
             IMAGE_TAG="${IMAGE_TAG_PARAM:-$BUILD_NUMBER}"
             [ -z "$IMAGE_TAG" ] && IMAGE_TAG=latest
 
-            sed -i "s|^\\(\\s*image:\\s*${BACKEND_IMAGE_REPOSITORY_PARAM}:\\).*|\\1${IMAGE_TAG}|g" infra-assignment/k8s/app/backend-deployment.yaml
-            sed -i "s|^\\(\\s*image:\\s*${FRONTEND_IMAGE_REPOSITORY_PARAM}:\\).*|\\1${IMAGE_TAG}|g" infra-assignment/k8s/app/frontend-deployment.yaml
-
-            kubectl apply -f infra-assignment/k8s/00-namespaces.yaml
-            kubectl apply -f infra-assignment/k8s/infra/
-            kubectl apply -f infra-assignment/k8s/app/
+            helm upgrade --install kubecoin infra-assignment/helm/kubecoin \
+              --namespace infra \
+              --create-namespace \
+              --set backend.image.repository="${BACKEND_IMAGE_REPOSITORY_PARAM}" \
+              --set backend.image.tag="${IMAGE_TAG}" \
+              --set frontend.image.repository="${FRONTEND_IMAGE_REPOSITORY_PARAM}" \
+              --set frontend.image.tag="${IMAGE_TAG}" \
+              --wait \
+              --timeout 10m
           '''
         }
       }
