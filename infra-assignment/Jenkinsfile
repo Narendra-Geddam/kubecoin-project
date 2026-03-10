@@ -26,7 +26,7 @@ spec:
     string(name: 'IMAGE_TAG_PARAM', defaultValue: '', description: 'Image tag override. If empty, BUILD_NUMBER is used.')
     string(name: 'BACKEND_IMAGE_REPOSITORY_PARAM', defaultValue: 'docker.io/privatergistry/kubecoin-backend', description: 'Backend Docker image repo')
     string(name: 'FRONTEND_IMAGE_REPOSITORY_PARAM', defaultValue: 'docker.io/privatergistry/kubecoin-frontend', description: 'Frontend Docker image repo')
-    booleanParam(name: 'KAFKA_ENABLED_PARAM', defaultValue: true, description: 'Deploy Kafka infra service')
+    booleanParam(name: 'KAFKA_ENABLED_PARAM', defaultValue: false, description: 'Deploy Kafka infra service')
   }
 
   environment {
@@ -107,7 +107,6 @@ EOF
               --set backend.image.tag="${IMAGE_TAG}" \
               --set frontend.image.repository="${FRONTEND_IMAGE_REPOSITORY_PARAM}" \
               --set frontend.image.tag="${IMAGE_TAG}" \
-              --set-string kafka.image="obsidiandynamics/kafka:latest" \
               --set kafka.enabled="${KAFKA_ENABLED}" \
               --wait \
               --timeout 10m

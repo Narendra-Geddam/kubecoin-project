@@ -20,6 +20,8 @@ metadata:
 spec:
   serviceName: kafka
   replicas: 1
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       app: kafka
@@ -33,25 +35,6 @@ spec:
           image: {{ .Values.kafka.image }}
           ports:
             - containerPort: 9092
-          env:
-            - name: KAFKA_CFG_NODE_ID
-              value: {{ .Values.kafka.env.KAFKA_CFG_NODE_ID | quote }}
-            - name: KAFKA_CFG_PROCESS_ROLES
-              value: {{ .Values.kafka.env.KAFKA_CFG_PROCESS_ROLES | quote }}
-            - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
-              value: {{ .Values.kafka.env.KAFKA_CFG_CONTROLLER_LISTENER_NAMES | quote }}
-            - name: KAFKA_CFG_LISTENERS
-              value: {{ .Values.kafka.env.KAFKA_CFG_LISTENERS | quote }}
-            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
-              value: {{ .Values.kafka.env.KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP | quote }}
-            - name: KAFKA_CFG_ADVERTISED_LISTENERS
-              value: {{ .Values.kafka.env.KAFKA_CFG_ADVERTISED_LISTENERS | quote }}
-            - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
-              value: {{ .Values.kafka.env.KAFKA_CFG_CONTROLLER_QUORUM_VOTERS | quote }}
-            - name: KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE
-              value: {{ .Values.kafka.env.KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE | quote }}
-            - name: ALLOW_PLAINTEXT_LISTENER
-              value: {{ .Values.kafka.env.ALLOW_PLAINTEXT_LISTENER | quote }}
           resources:
             limits:
               cpu: {{ .Values.kafka.resources.limits.cpu | quote }}

@@ -17,18 +17,8 @@ postgres:
       memory: "512Mi"
 
 kafka:
-  enabled: true
+  enabled: false
   image: obsidiandynamics/kafka:latest
-  env:
-    KAFKA_CFG_NODE_ID: "0"
-    KAFKA_CFG_PROCESS_ROLES: "controller,broker"
-    KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
-    KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
-    KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
-    KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka.infra.svc.cluster.local:9092"
-    KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "0@kafka-0.kafka.infra.svc.cluster.local:9093"
-    KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
-    ALLOW_PLAINTEXT_LISTENER: "yes"
   volume:
     name: kafka-storage
     size: 2Gi
@@ -46,7 +36,6 @@ backend:
     DB_NAME: kubecoin
     DB_USER: postgres
     DB_PASSWORD: password
-    KAFKA_BOOTSTRAP_SERVERS: kafka.infra.svc.cluster.local:9092
   resources:
     limits:
       cpu: "500m"
