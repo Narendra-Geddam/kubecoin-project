@@ -18,7 +18,7 @@ postgres:
 
 kafka:
   enabled: true
-  image: bitnami/kafka:latest
+  image: obsidiandynamics/kafka:latest
   env:
     KAFKA_CFG_NODE_ID: "0"
     KAFKA_CFG_PROCESS_ROLES: "controller,broker"

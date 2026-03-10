@@ -26,7 +26,7 @@ spec:
     string(name: 'IMAGE_TAG_PARAM', defaultValue: '', description: 'Image tag override. If empty, BUILD_NUMBER is used.')
     string(name: 'BACKEND_IMAGE_REPOSITORY_PARAM', defaultValue: 'docker.io/privatergistry/kubecoin-backend', description: 'Backend Docker image repo')
     string(name: 'FRONTEND_IMAGE_REPOSITORY_PARAM', defaultValue: 'docker.io/privatergistry/kubecoin-frontend', description: 'Frontend Docker image repo')
-    string(name: 'KAFKA_IMAGE_PARAM', defaultValue: 'bitnami/kafka:latest', description: 'Kafka image to deploy')
+    string(name: 'KAFKA_IMAGE_PARAM', defaultValue: 'obsidiandynamics/kafka:latest', description: 'Kafka image to deploy')
     booleanParam(name: 'KAFKA_ENABLED_PARAM', defaultValue: true, description: 'Deploy Kafka infra service')
   }
 
@@ -99,8 +99,8 @@ EOF
             [ -z "$IMAGE_TAG" ] && IMAGE_TAG=latest
             KAFKA_ENABLED="${KAFKA_ENABLED_PARAM:-true}"
             [ "$KAFKA_ENABLED" != "true" ] && [ "$KAFKA_ENABLED" != "false" ] && KAFKA_ENABLED=true
-            KAFKA_IMAGE="${KAFKA_IMAGE_PARAM:-bitnami/kafka:latest}"
-            [ -z "$KAFKA_IMAGE" ] && KAFKA_IMAGE="bitnami/kafka:latest"
+            KAFKA_IMAGE="${KAFKA_IMAGE_PARAM:-obsidiandynamics/kafka:latest}"
+            [ -z "$KAFKA_IMAGE" ] && KAFKA_IMAGE="obsidiandynamics/kafka:latest"
 
             helm upgrade --install kubecoin infra-assignment/helm/kubecoin \
               --namespace infra \

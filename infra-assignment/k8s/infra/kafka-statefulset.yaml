@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: kafka
-          image: bitnami/kafka:latest
+          image: obsidiandynamics/kafka:latest
           ports:
             - containerPort: 9092
           env:
