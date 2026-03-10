@@ -97,16 +97,21 @@ EOF
           sh '''
             IMAGE_TAG="${IMAGE_TAG_PARAM:-$BUILD_NUMBER}"
             [ -z "$IMAGE_TAG" ] && IMAGE_TAG=latest
+            KAFKA_ENABLED="${KAFKA_ENABLED_PARAM:-true}"
+            [ "$KAFKA_ENABLED" != "true" ] && [ "$KAFKA_ENABLED" != "false" ] && KAFKA_ENABLED=true
+            KAFKA_IMAGE="${KAFKA_IMAGE_PARAM:-bitnami/kafka:latest}"
+            [ -z "$KAFKA_IMAGE" ] && KAFKA_IMAGE="bitnami/kafka:latest"
 
             helm upgrade --install kubecoin infra-assignment/helm/kubecoin \
               --namespace infra \
               --create-namespace \
+              --reset-values \
               --set backend.image.repository="${BACKEND_IMAGE_REPOSITORY_PARAM}" \
               --set backend.image.tag="${IMAGE_TAG}" \
               --set frontend.image.repository="${FRONTEND_IMAGE_REPOSITORY_PARAM}" \
               --set frontend.image.tag="${IMAGE_TAG}" \
-              --set-string kafka.image="${KAFKA_IMAGE_PARAM}" \
-              --set kafka.enabled="${KAFKA_ENABLED_PARAM}" \
+              --set-string kafka.image="${KAFKA_IMAGE}" \
+              --set kafka.enabled="${KAFKA_ENABLED}" \
               --wait \
               --timeout 10m
           '''
